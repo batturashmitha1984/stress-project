@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Stress Level Predictor</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+<div class="container">
+    <h1>🧠 Stress Level Predictor</h1>
+    <p>Enter your details to check your stress level</p>
+
+    <form id="form">
+        <input type="number" id="age" placeholder="Enter Age" required>
+        <input type="number" id="sleep" placeholder="Sleep Hours" required>
+        <input type="number" id="work" placeholder="Work Hours" required>
+
+        <button type="submit">Predict</button>
+    </form>
+
+    <div id="result"></div>
+</div>
+
+<script>
+document.getElementById("form").onsubmit = async function(e) {
+    e.preventDefault();
+
+    let age = Number(document.getElementById("age").value);
+    let sleep = Number(document.getElementById("sleep").value);
+    let work = Number(document.getElementById("work").value);
+
+    document.getElementById("result").innerText = "Predicting...";
+
+    try {
+        let response = await fetch("/predict", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                features: [age, sleep, work]
+            })
+        });
+
+        let data = await response.json();
+
+        let stressText = "";
+        if (data.stress_level == 0) stressText = "Low Stress 😊";
+        else if (data.stress_level == 1) stressText = "Medium Stress 😐";
+        else stressText = "High Stress 😣";
+
+        document.getElementById("result").innerText = stressText;
+
+    } catch (error) {
+        document.getElementById("result").innerText = "Server Error";
+    }
+};
+</script>
+
+</body>
+</html>
