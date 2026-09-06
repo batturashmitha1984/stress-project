@@ -44,3 +44,16 @@ jobs:
       - name: Push Docker image
         run: |
           docker push batturashmitha/stress-level-app:latest
+
+      - name: Deploy to EC2
+        uses: appleboy/ssh-action@v1.2.0
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USERNAME }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          script: |
+            cd ~/stress-project
+            docker pull batturashmitha/stress-level-app:latest
+            docker stop stress-app || true
+            docker rm stress-app || true
+            docker run -d -p 5001:5001 --name stress-app batturashmitha/stress-level-app:latest
