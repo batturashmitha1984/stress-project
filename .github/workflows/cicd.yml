@@ -9,7 +9,7 @@ on:
       - main
 
 jobs:
-  build-and-test:
+  build-test-push:
     runs-on: ubuntu-latest
 
     steps:
@@ -27,10 +27,23 @@ jobs:
 
       - name: Build Docker image
         run: |
-          docker build -t stress-level-app .
+          docker build -t batturashmitha/stress-level-app:latest .
 
       - name: Test Docker image
         run: |
+          docker run -d -p 5001:5001 --name stress-app batturashmitha/stress-level-app:latest
+          sleep 10
+          curl http://localhost:5001
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Push Docker image
+        run: |
+          docker push batturashmitha/stress-level-app:latest
           docker run -d -p 5001:5001 --name stress-app stress-level-app
           sleep 10
           curl http://localhost:5001
