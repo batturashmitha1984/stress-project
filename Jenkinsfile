@@ -11,13 +11,21 @@ pipeline {
 
         stage('Build Docker Image') {
             steps {
-                bat 'docker build -t stress-level-app .'
+                bat 'docker build -t batturashmitha/stress-level-app:latest .'
             }
         }
 
-        stage('Check Docker Image') {
+        stage('Push to Docker Hub') {
             steps {
-                bat 'docker images stress-level-app'
+                withCredentials([usernamePassword(
+                    credentialsId: 'dockerhub-credentials',
+                    usernameVariable: 'DOCKER_USERNAME',
+                    passwordVariable: 'DOCKER_PASSWORD'
+                )]) {
+
+                    bat 'docker login -u %DOCKER_USERNAME% -p %DOCKER_PASSWORD%'
+                    bat 'docker push batturashmitha/stress-level-app:latest'
+                }
             }
         }
     }
