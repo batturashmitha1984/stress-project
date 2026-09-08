@@ -3,28 +3,12 @@ pipeline {
 
     stages {
 
-        stage('Checkout') {
+        stage('Test EC2 SSH') {
             steps {
-                checkout scm
-            }
-        }
-
-        stage('Build Docker Image') {
-            steps {
-                bat 'docker build -t batturashmitha/stress-level-app:latest .'
-            }
-        }
-
-        stage('Push to Docker Hub') {
-            steps {
-                withCredentials([usernamePassword(
-                    credentialsId: 'dockerhub-credentials',
-                    usernameVariable: 'DOCKER_USERNAME',
-                    passwordVariable: 'DOCKER_PASSWORD'
-                )]) {
-
-                    bat 'docker login -u %DOCKER_USERNAME% -p %DOCKER_PASSWORD%'
-                    bat 'docker push batturashmitha/stress-level-app:latest'
+                sshagent(['ec2-ssh-key']) {
+                    bat '''
+                        ssh -o StrictHostKeyChecking=no ubuntu@18.208.222.154 "echo EC2_CONNECTION_SUCCESS"
+                    '''
                 }
             }
         }
