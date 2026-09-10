@@ -1,5 +1,5 @@
 # stress-detector-app
-# 🧠 Stress Level Prediction Web App
+# 🧠 Stress Level Prediction Web Application
 
 A full-stack Machine Learning web application that predicts stress levels based on user inputs like age, sleep hours, and work hours. Built using Flask, Docker, and a simple web UI.
 
